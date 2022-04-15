@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour
     Camera cam;
     PlayerMotor motor;
 
+    public Interactuable focus;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,6 +29,8 @@ public class PlayerController : MonoBehaviour
             if (Physics.Raycast(ray, out hit, 100, movementMask))
             {
                 motor.MoveToPoint(hit.point);
+
+                RemoveFocus();
             }
         }
 
@@ -37,8 +41,24 @@ public class PlayerController : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit, 100))
             {
-                
+                Interactuable interactable = hit.collider.GetComponent<Interactuable>();
+                if (interactable != null)
+                {
+                    SetFocus(interactable);
+                }
             }
         }
+    }
+
+    void SetFocus(Interactuable newFocus)
+    {
+        focus = newFocus;
+        motor.FollowTarget(newFocus);
+    }
+
+    void RemoveFocus()
+    {
+        focus = null;
+        motor.StopFollowTarget();
     }
 }
